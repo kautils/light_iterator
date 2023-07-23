@@ -18,6 +18,9 @@ struct continuous_typecheck_exception : std::exception{
 };
 
 
+namespace kautil{
+namespace light_iterator{
+
 
 #define __i(v) reinterpret_cast<uintptr_t>(v)
 #define __v(v) reinterpret_cast<void*>(v)
@@ -52,9 +55,10 @@ bool Continuous::next() const{
 }
 void Continuous::reset()const { m->fst = true;m->cur = m->beg; }
 void * Continuous::current() const{ return m->cur; }
+Continuous* Continuous_internal_factory(){ return new Continuous{}; }
     
 
-struct non_continuous_map_internal{
+struct non_continuous_internal{
     void * obj = 0;
     void * beg = 0;
     void * end = 0;
@@ -79,7 +83,7 @@ bool NonContinuous::next() const {
 }
 
 
-NonContinuous::NonContinuous(NonContinuous && r) : m(r.m){ r.m=nullptr; }
+
 NonContinuous NonContinuous::factory(void * obj,void * (*new_begin)(void * obj),void * (*new_end)(void * obj),void (*del)(void * )
          ,void (*step)(void * element_as_voidptr)
          ,bool (*is_end)(void * cur,void * end)
@@ -112,23 +116,40 @@ void NonContinuous::set(void * obj
 
 void NonContinuous::reset() const { m->fst=true;m->cur=m->beg; }
 void* NonContinuous::current() const { return m->cur; }
-NonContinuous::NonContinuous() : m(new non_continuous_map_internal){}
+NonContinuous::NonContinuous() : m(new non_continuous_internal){}
+NonContinuous::NonContinuous(NonContinuous && r) : m(r.m){ r.m=nullptr; }
+
+NonContinuous *NonContinuous_internal_factory() { return new NonContinuous; }
+
+
+} //namespace light_iterator{
+} //namespace kautil{
+
+
+#define to_c_type(v)  reinterpret_cast<kautil_continuous_itr_iterator*>(v)
+#define _c(v)  reinterpret_cast<kautil::light_iterator::Continuous*>(v)
+
+
+struct kautil_continuous_itr_iterator{}; 
+
+//struct kautil_continuous_itr_iterator{};
+kautil_continuous_itr_iterator* kautil_continuous_itr_initialize(){ return to_c_type(kautil::light_iterator::Continuous_internal_factory()); }
+void kautil_continuous_itr_setup(kautil_continuous_itr_iterator* m,void * beg, void * end,int step,int size0,int size1){ _c(m)->set(beg,end,step,size0,size1); }
+void kautil_continuous_itr_finalize(kautil_continuous_itr_iterator* m){ delete _c(m); }
+bool kautil_continuous_itr_next(kautil_continuous_itr_iterator* m){ return _c(m)->next(); }
+void kautil_continuous_itr_reset(kautil_continuous_itr_iterator* m){ _c(m)->reset(); }
+void* kautil_continuous_itr_current(kautil_continuous_itr_iterator* m){ return _c(m)->current(); }
 
 
 
-Continuous* continuous_itr_initialize(){ return new Continuous{}; }
-void continuous_itr_setup(Continuous* m,void * beg, void * end,int step,int size0,int size1){ m->set(beg,end,step,size0,size1); }
-void continuous_itr_finalize(Continuous* m){ delete m; }
-bool continuous_itr_next(Continuous* m){ return m->next(); }
-void continuous_itr_reset(Continuous* m){ m->reset(); }
-void* continuous_itr_current(Continuous* m){ return m->current(); }
 
+#define to_nc_type(v)  reinterpret_cast<kautil_non_continuous_iterator*>(v)
+#define _nc(v)  reinterpret_cast<kautil::light_iterator::NonContinuous*>(v)
 
-NonContinuous* non_continuous_itr_initialize(){ return new NonContinuous; }
-void non_continuous_itr_finalize(NonContinuous* m){ delete m; }
-void non_continuous_itr_setup(NonContinuous* m,void * obj,void * (*new_begin)(void * obj),void * (*new_end)(void * obj),void (*del)(void * ),void (*step)(void * element_as_voidptr),bool (*is_end)(void * cur,void * end),int size0,int size1){ m->set(obj,new_begin,new_end,del,step,is_end,size0,size1); }
-bool non_continuous_itr_next(NonContinuous* m){ return m->next(); }
-void non_continuous_itr_reset(NonContinuous* m){ m->reset(); }
-void* non_continuous_itr_current(NonContinuous* m){ return m->current(); }
-
-
+struct kautil_non_continuous_iterator{}; 
+kautil_non_continuous_iterator* kautil_non_continuous_itr_initialize(){ return to_nc_type(kautil::light_iterator::NonContinuous_internal_factory()); }
+void kautil_non_continuous_itr_finalize(kautil_non_continuous_iterator* m){ delete _nc(m); }
+void kautil_non_continuous_itr_setup(kautil_non_continuous_iterator* m,void * obj,void * (*new_begin)(void * obj),void * (*new_end)(void * obj),void (*del)(void * ),void (*step)(void * element_as_voidptr),bool (*is_end)(void * cur,void * end),int size0,int size1){ _nc(m)->set(obj,new_begin,new_end,del,step,is_end,size0,size1); }
+bool kautil_non_continuous_itr_next(kautil_non_continuous_iterator* m){ return _nc(m)->next(); }
+void kautil_non_continuous_itr_reset(kautil_non_continuous_iterator* m){ _nc(m)->reset(); }
+void* kautil_non_continuous_itr_current(kautil_non_continuous_iterator* m){ return _nc(m)->current(); }

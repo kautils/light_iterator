@@ -28,8 +28,12 @@ noncontinuous_generate_callback_functions(map_s_u64,umap_s_u64_t)
 // that module exports pointer to iterator.
 
 
+
+
 int tmain_light_iterator(int(*__printf)(const char*,...)){
 
+    
+    using namespace kautil::light_iterator;
     
     
     for(;;){
@@ -52,14 +56,14 @@ int tmain_light_iterator(int(*__printf)(const char*,...)){
             }
 
             {
-                auto itr = non_continuous_itr_initialize();
-                //non_continuous_itr_setup_util_p(itr,map_s_s_t,&m);
-                non_continuous_itr_setup_util_declared_p(itr,map_s_s,&m);
-                non_continuous_itr_setup_util_declared(itr,map_s_s,m);
-                while(non_continuous_itr_next(itr)){
-                    printf("%s\n", (*reinterpret_cast<map_type::iterator*>(non_continuous_itr_current(itr)))->second.data());
+                auto itr = kautil_non_continuous_itr_initialize();
+                //kautil_non_continuous_itr_setup_util_p(itr,map_s_s_t,&m);
+                kautil_non_continuous_itr_setup_util_declared_p(itr,map_s_s,&m);
+                kautil_non_continuous_itr_setup_util_declared(itr,map_s_s,m);
+                while(kautil_non_continuous_itr_next(itr)){
+                    printf("%s\n", (*reinterpret_cast<map_type::iterator*>(kautil_non_continuous_itr_current(itr)))->second.data());
                 }
-                non_continuous_itr_finalize(itr);
+                kautil_non_continuous_itr_finalize(itr);
             }
             
             
@@ -90,11 +94,11 @@ int tmain_light_iterator(int(*__printf)(const char*,...)){
             }
             
             {
-                auto itr = continuous_itr_initialize();
-                continuous_itr_setup_util_p(itr,export_vector_type,&vec);
+                auto itr = kautil_continuous_itr_initialize();
+                kautil_continuous_itr_setup_util_p(itr,export_vector_type,&vec);
                 //continuous_itr_setup_util(itr,export_vector_type,vec);
-                while(continuous_itr_next(itr)) __printf("++%d\n",*reinterpret_cast<value_type*>(continuous_itr_current(itr)));
-                continuous_itr_finalize(itr);
+                while(kautil_continuous_itr_next(itr)) __printf("++%d\n",*reinterpret_cast<value_type*>(kautil_continuous_itr_current(itr)));
+                kautil_continuous_itr_finalize(itr);
             }
         }
     
