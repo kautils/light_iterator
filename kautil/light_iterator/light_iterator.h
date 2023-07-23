@@ -53,8 +53,8 @@ private:
 };
 
 
-#define continuous_iterator(type,arg) kautil::light_iterator::Continuous::factory((arg).begin().base(),(arg).end().base(), sizeof(type::value_type),sizeof(type),sizeof( decltype(arg) ))
-#define continuous_iterator_p(type,arg) kautil::light_iterator::Continuous::factory((arg)->begin().base(),(arg)->end().base(), sizeof(type::value_type),sizeof(type),sizeof( decltype(*(arg)) ))
+#define kautil_continuous_iterator(type,arg) kautil::light_iterator::Continuous::factory((arg).begin().base(),(arg).end().base(), sizeof(type::value_type),sizeof(type),sizeof( decltype(arg) ))
+#define kautil_continuous_iterator_p(type,arg) kautil::light_iterator::Continuous::factory((arg)->begin().base(),(arg)->end().base(), sizeof(type::value_type),sizeof(type),sizeof( decltype(*(arg)) ))
 
 
 
@@ -78,7 +78,7 @@ private:
 
 
 
-#define noncontinuous_iterator_p(type,ptr) kautil::light_iterator::NonContinuous::factory(\
+#define kautil_noncontinuous_iterator_p(type,ptr) kautil::light_iterator::NonContinuous::factory(\
     ptr\
     ,[](void * o)->void*{ return new type::iterator(reinterpret_cast<type*>(o)->begin()); }\
     ,[](void * o)->void*{ return new type::iterator(reinterpret_cast<type*>(o)->end()); }\
@@ -86,10 +86,10 @@ private:
     ,[](void* v){ ++(*reinterpret_cast<type::iterator*>(v)); }\
     ,[](void* cur,void* end){ return *reinterpret_cast<type::iterator*>(cur) != *reinterpret_cast<type::iterator*>(end); },sizeof(type),sizeof(decltype(*(ptr))));
 
-#define noncontinuous_iterator(type,obj) noncontinuous_iterator_p(type,&obj)
+#define kautil_noncontinuous_iterator(type,obj) kautil_noncontinuous_iterator_p(type,&obj)
 
 
-#define noncontinuous_generate_callback_functions(prefix,type)\
+#define kautil_noncontinuous_generate_callback_functions(prefix,type)\
 void * prefix##_begin(void * o){ return new type::iterator(reinterpret_cast<type*>(o)->begin()); }\
 void * prefix##_end(void * o){ return new type::iterator(reinterpret_cast<type*>(o)->end()); }\
 void prefix##_delete(void * itr){  delete reinterpret_cast<type::iterator*>(itr); }\
@@ -97,8 +97,8 @@ void prefix##_next(void* v){ ++(*reinterpret_cast<type::iterator*>(v)); }\
 bool prefix##_is_end(void* cur,void* end){ return *reinterpret_cast<type::iterator*>(cur) != *reinterpret_cast<type::iterator*>(end); }\
 int32_t prefix##_object_size(){ return sizeof(type); }
 
-#define noncontinuous_iterator_declared_p(prefix,ptr) kautil::light_iterator::NonContinuous::factory( ptr ,prefix##_begin ,prefix##_end ,prefix##_delete ,prefix##_next ,prefix##_is_end,prefix##_object_size(),sizeof(decltype(*(ptr))))
-#define noncontinuous_iterator_declared(prefix,obj) kautil::light_iterator::NonContinuous::factory( (&obj) ,prefix##_begin ,prefix##_end ,prefix##_delete ,prefix##_next ,prefix##_is_end,prefix##_object_size(),sizeof(decltype(obj)))
+#define kautil_noncontinuous_iterator_declared_p(prefix,ptr) kautil::light_iterator::NonContinuous::factory( ptr ,prefix##_begin ,prefix##_end ,prefix##_delete ,prefix##_next ,prefix##_is_end,prefix##_object_size(),sizeof(decltype(*(ptr))))
+#define kautil_noncontinuous_iterator_declared(prefix,obj) kautil::light_iterator::NonContinuous::factory( (&obj) ,prefix##_begin ,prefix##_end ,prefix##_delete ,prefix##_next ,prefix##_is_end,prefix##_object_size(),sizeof(decltype(obj)))
 
 
 } //namespace light_iterator{

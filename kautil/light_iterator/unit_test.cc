@@ -16,10 +16,10 @@ int main(){ return tmain_light_iterator(printf); }
 
 
 using map_s_s_t = std::map<std::string,std::string>;
-noncontinuous_generate_callback_functions(map_s_s,map_s_s_t)
+kautil_noncontinuous_generate_callback_functions(map_s_s,map_s_s_t)
 
 using umap_s_u64_t = std::unordered_map<std::string,uint64_t>;
-noncontinuous_generate_callback_functions(map_s_u64,umap_s_u64_t)
+kautil_noncontinuous_generate_callback_functions(map_s_u64,umap_s_u64_t)
 
 #define export_vector_type std::vector<int> 
 // below is expected. 
@@ -48,7 +48,7 @@ int tmain_light_iterator(int(*__printf)(const char*,...)){
             }
 
             {
-                auto itr=noncontinuous_iterator_declared_p(map_s_s,&m);
+                auto itr=kautil_noncontinuous_iterator_declared_p(map_s_s,&m);
                 while(itr.next()){
                     printf("%s\n", (*reinterpret_cast<map_type::iterator*>(itr.current()))->second.data());
                     fflush(stdout);
@@ -77,7 +77,8 @@ int tmain_light_iterator(int(*__printf)(const char*,...)){
                 m2.insert("set2");
                 m2.insert("set3");
             }
-            auto itr2=noncontinuous_iterator(set_type,m2);
+            
+            auto itr2=kautil_noncontinuous_iterator(set_type,m2);
             // auto itr2=noncontinuous_iterator_p(set_type,&m2);
             while(itr2.next()) printf("%s\n", (*reinterpret_cast<set_type::iterator*>(itr2.current()))->data());
         }
@@ -88,7 +89,7 @@ int tmain_light_iterator(int(*__printf)(const char*,...)){
             auto vec = std::vector<int>{1,2,3,4};
 
             {
-                auto const& itr0 = continuous_iterator_p(export_vector_type,(&vec));
+                auto const& itr0 = kautil_continuous_iterator_p(export_vector_type,(&vec));
                 while(itr0.next())__printf("++%d\n",*reinterpret_cast<value_type*>(itr0.current()));
                 itr0.reset();
             }
